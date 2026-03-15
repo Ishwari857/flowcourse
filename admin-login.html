@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login | Student Information Portal</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: radial-gradient(circle at top, #2b0045, #0b0017 65%);
+        color: white;
+      }
+
+      .container {
+        width: 380px;
+        padding: 40px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 30px rgba(155, 0, 255, 0.35);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        font-weight: 600;
+      }
+
+      input {
+        width: 100%;
+        padding: 14px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        outline: none;
+        font-size: 14px;
+      }
+
+      input::placeholder {
+        color: #ddd;
+      }
+
+      button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 15px;
+        border: none;
+        border-radius: 30px;
+        background: linear-gradient(45deg, #9d4edd, #7b2cbf);
+        color: white;
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 15px #9d4edd;
+      }
+
+      #error {
+        text-align: center;
+        margin-top: 10px;
+        color: #ff6b6b;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Admin Login</h2>
+
+      <input type="text" id="adminId" placeholder="Admin ID" />
+      <input type="password" id="password" placeholder="Password" />
+
+      <button onclick="login()">Login</button>
+      <div
+        id="loader"
+        style="display: none; margin-top: 10px; text-align: center"
+      >
+        ⏳ Checking...
+      </div>
+
+      <p id="error"></p>
+    </div>
+
+    <script>
+      const loader = document.getElementById("loader");
+      const btn = document.querySelector("button");
+
+      function login() {
+        let pass = document.getElementById("password").value;
+
+        let formData = new FormData();
+
+        formData.append("type", "adminLogin");
+        formData.append("password", pass);
+        loader.style.display = "block";
+        btn.disabled = true;
+
+        fetch(
+          "https://script.google.com/macros/s/AKfycbxwRJJ4I817MiWduFYqzaeXr1Lyots83fKjv8V6e9SOhfUEzqma_ygSZZhzBVhqFhXp/exec",
+          {
+            method: "POST",
+            body: formData,
+          },
+        )
+          .then((res) => res.text())
+          .then((data) => {
+            loader.style.display = "none";
+            btn.disabled = false;
+
+            if (data === "success") {
+              localStorage.setItem("adminLogin", "true");
+
+              window.location.href = "admin.html";
+            } else {
+              document.getElementById("error").innerText = "Invalid Password";
+            }
+          })
+          .catch((err) => {
+            loader.style.display = "none";
+            btn.disabled = false;
+
+            document.getElementById("error").innerText = "Server Error";
+          });
+      }
+    </script>
+  </body>
+</html>

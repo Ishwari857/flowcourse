@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Student Management Portal</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        background: radial-gradient(circle at top, #2b0045, #0b0017 70%);
+        color: white;
+        padding: 25px;
+        text-align: center;
+      }
+
+      .light {
+        background: white;
+        color: black;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+      }
+
+      .topBar {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 30px;
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .section {
+        max-width: 850px;
+        margin: auto;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 25px;
+        border-radius: 15px;
+        margin-top: 25px;
+      }
+
+      .rule {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 12px;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .ruleContent {
+        display: none;
+        font-size: 14px;
+        margin-top: 5px;
+        color: #ccc;
+      }
+
+      .about,
+      .contact {
+        margin-top: 30px;
+        text-align: left;
+        line-height: 1.6;
+      }
+
+      input {
+        padding: 10px;
+        width: 80%;
+        border: none;
+        border-radius: 8px;
+        margin-top: 10px;
+      }
+
+      .statusBox {
+        margin-top: 25px;
+      }
+
+      @media (max-width: 600px) {
+        button {
+          width: 100%;
+        }
+
+        input {
+          width: 100%;
+        }
+      }
+
+      .agreeBox {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+        font-size: 14px;
+      }
+
+      .agreeBox input {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>🎓 Student Information Portal</h1>
+
+    <div class="topBar">
+      <button id="admissionBtn" onclick="openAdmission()" disabled>
+        Admission Form
+      </button>
+
+      <button onclick="openAdmin()">Admin Panel</button>
+
+      <button onclick="toggleMode()">🌙 / ☀ Mode</button>
+    </div>
+
+    <div class="section">
+      <h2>📜 Rules & Regulations</h2>
+
+        <div id="rulesContainer">Loading rules...</div>
+        
+      <div style="margin-top: 20px">
+        <div class="agreeBox">
+          <input type="checkbox" id="agreeRules" onchange="enableAdmission()" />
+
+          <label for="agreeRules"> I Agree to all Rules & Regulations </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="section statusBox">
+      <h3>🔍 Check Admission Status</h3>
+
+      <input id="checkEmail" placeholder="Enter Email" />
+
+      <br />
+
+      <button onclick="checkStatus()">Check Status</button>
+
+      <p id="statusResult"></p>
+    </div>
+
+    <div class="section about">
+      <h2>🏫 About Our Institute</h2>
+
+      <p>
+        ✔ Industry Level Training<br />
+        ✔ Real Project Based Learning<br />
+        ✔ Internship Opportunities<br />
+        ✔ Experienced Mentors<br />
+        ✔ Placement Guidance<br />
+      </p>
+    </div>
+
+    <div class="section contact">
+      <h2>📞 Contact Us</h2>
+
+      <p>Phone : +91 9876543210</p>
+
+      <p>Email : institute@gmail.com</p>
+
+      <p>Address : Nagpur, Maharashtra</p>
+    </div>
+
+    <script>
+      function toggleRule(el) {
+        let content = el.querySelector(".ruleContent");
+
+        content.style.display =
+          content.style.display === "block" ? "none" : "block";
+      }
+
+      function enableAdmission() {
+        const checkbox = document.getElementById("agreeRules");
+        const btn = document.getElementById("admissionBtn");
+
+        btn.disabled = !checkbox.checked;
+      }
+
+      function openAdmission() {
+        window.location.href = "staff-auth.html";
+      }
+
+      function openAdmin() {
+        window.location.href = "admin-login.html";
+      }
+
+      function toggleMode() {
+        document.body.classList.toggle("light");
+      }
+
+      function checkStatus() {
+        let email = document.getElementById("checkEmail").value;
+
+        document.getElementById("statusResult").innerText =
+          "Status checking feature connected with backend.";
+      }
+
+      const rulesURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRGvucc62JEFtApTIfmUMqMihE8KJqoM1Hx0NlnzPcq0dxfj-fBspjW1c9MbrVGZLrCdrT55NDz-d7k/pub?gid=1540723248&single=true&output=csv";
+
+fetch(rulesURL)
+.then(res => res.text())
+.then(data => {
+
+let rows = data.split("\n").slice(1);
+
+let container = document.getElementById("rulesContainer");
+
+container.innerHTML = "";
+
+rows.forEach(row => {
+
+  if(!row.trim()) return;
+
+let cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+let title = cols[0];
+let desc = cols[1];
+
+let div = document.createElement("div");
+
+div.className="rule";
+
+div.innerHTML = `
+<b>${title}</b>
+<div class="ruleContent">${desc}</div>
+`;
+
+div.onclick = function(){
+
+let content = this.querySelector(".ruleContent");
+
+content.style.display =
+content.style.display === "block" ? "none" : "block";
+
+};
+
+container.appendChild(div);
+
+});
+
+});
+    </script>
+  </body>
+</html>

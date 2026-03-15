@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Staff Login</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Poppins;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+background:linear-gradient(135deg,#2b0045,#0b0017);
+color:white;
+}
+
+.box{
+background:rgba(255,255,255,0.05);
+padding:40px;
+border-radius:15px;
+backdrop-filter:blur(20px);
+text-align:center;
+width:300px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:none;
+border-radius:10px;
+}
+
+button{
+padding:12px;
+width:100%;
+border:none;
+border-radius:10px;
+background:#9d4edd;
+color:white;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Staff Login</h2>
+
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<p style="margin-top:15px;font-size:14px;">
+New Staff?
+<a href="staff-auth.html" style="color:#c77dff;text-decoration:none;">
+Sign Up
+</a>
+</p>
+
+<p id="msg"></p>
+</div>
+
+<script>
+
+const sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vRGvucc62JEFtApTIfmUMqMihE8KJqoM1Hx0NlnzPcq0dxfj-fBspjW1c9MbrVGZLrCdrT55NDz-d7k/pub?gid=1800832107&single=true&output=csv";
+
+function login(){
+
+let email=document.getElementById("email").value.trim();
+let password=document.getElementById("password").value.trim();
+
+fetch(sheetURL)
+.then(res=>res.text())
+.then(data=>{
+
+let rows=data.split("\n").slice(1);
+
+for(let row of rows){
+
+let cols=row.split(",");
+
+let name=cols[0];
+let sheetEmail=cols[1];
+let sheetPass=cols[2];
+let status=cols[3];
+
+if(email===sheetEmail && password===sheetPass){
+
+if(status==="Approved"){
+
+localStorage.setItem("staffName",name);
+window.location="index.html";
+return;
+
+}else{
+
+alert("Waiting for Admin Approval");
+return;
+
+}
+
+}
+
+}
+
+alert("Invalid Login");
+
+});
+
+}
+</script>
+
+</body>
+</html>

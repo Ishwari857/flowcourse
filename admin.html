@@ -1,0 +1,1731 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STUDENT INFORMATION PORTAL</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      if (localStorage.getItem("adminLogin") !== "true") {
+        window.location.href = "admin-login.html";
+      }
+    </script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: radial-gradient(circle at top, #2b0045, #0b0017 65%);
+        min-height: 100vh;
+        padding: 40px;
+        color: white;
+        transition: 0.4s;
+      }
+
+      body.dark {
+        background: #0d1117;
+        color: #e6edf3;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+      }
+
+      .header h1 {
+        font-size: 38px;
+      }
+
+      .toggle {
+        position: absolute;
+        right: 0;
+        top: 0;
+        background: rgba(255, 255, 255, 0.15);
+        border: none;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 25px;
+        border-radius: 18px;
+        text-align: center;
+        transition: 0.4s;
+        box-shadow: 0 0 20px rgba(155, 0, 255, 0.25);
+        cursor: pointer;
+        text-decoration: none;
+        color: white;
+      }
+
+      .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 0 35px rgba(200, 0, 255, 0.45);
+      }
+      #tableBody tr:hover{
+background:rgba(157,78,221,0.2);
+cursor:pointer;
+}
+
+      .section {
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 25px;
+        border-radius: 18px;
+        margin-bottom: 30px;
+        box-shadow: 0 0 25px rgba(150, 0, 255, 0.25);
+        overflow-x: auto;
+      }
+
+      input {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 25px;
+        outline: none;
+        font-size: 15px;
+        background: #d7dce3;
+        color: #000;
+        margin-bottom: 12px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+      }
+
+      th {
+        color: #cba6ff;
+        padding: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        text-align: left;
+      }
+
+      td {
+        padding: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        color: #eaeaea;
+        text-align: left;
+      }
+
+      .chartBox {
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 0 25px rgba(150, 0, 255, 0.25);
+      }
+
+      .chart-container {
+        height: 250px;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 15px;
+        }
+
+        .header h1 {
+          font-size: 24px;
+        }
+
+        .dashboard {
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
+        }
+
+        .card {
+          padding: 18px;
+        }
+
+        .section {
+          padding: 15px;
+        }
+
+        input {
+          font-size: 14px;
+        }
+
+        table {
+          font-size: 13px;
+        }
+
+        th,
+        td {
+          padding: 8px;
+        }
+
+        .chart-container {
+          height: 200px;
+        }
+      }
+      #notifyList {
+        list-style: none;
+        padding: 0;
+      }
+
+      #notifyList li {
+        padding: 10px;
+        margin-bottom: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+      }
+      #adminLog li{
+padding:10px;
+margin-bottom:8px;
+background:rgba(157,78,221,0.15);
+border-left:4px solid #9d4edd;
+border-radius:8px;
+}
+      #toast{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#9d4edd;
+color:white;
+padding:15px 25px;
+border-radius:10px;
+box-shadow:0 0 20px rgba(0,0,0,0.4);
+display:none;
+z-index:9999;
+}
+#commandList li{
+padding:10px;
+cursor:pointer;
+border-radius:6px;
+}
+
+#commandList li:hover{
+background:rgba(157,78,221,0.2);
+}
+
+#courseFilter{
+padding:10px 14px;
+border-radius:10px;
+border:none;
+background:rgba(255,255,255,0.08);
+color:white;
+font-size:14px;
+outline:none;
+width:160px;
+cursor:pointer;
+}
+
+#courseFilter:hover{
+background:rgba(157,78,221,0.25);
+}
+
+#courseFilter option{
+background:#1a0030;
+color:white;
+}
+
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>🎓 STUDENT INFORMATION PORTAL</h1>
+      <p>Student Records , Reports & Analytics</p>
+      <h6>HELLO FUTURE CODERS....!!!</h6>
+      <h3 id="greeting" style="margin-top:8px;color:#c77dff"></h3>
+      <p id="liveClock"></p>
+      <button class="toggle" id="modeToggle">🌙</button>
+
+      <button
+        onclick="confirmLogout()"
+        style="
+          position: absolute;
+          right: 80px;
+          top: 0;
+          background: #ff4b5c;
+          border: none;
+          padding: 8px 15px;
+          border-radius: 8px;
+          color: white;
+          cursor: pointer;
+        "
+      >
+        Logout
+      </button>
+    </div>
+
+    <div class="dashboard">
+      <a
+        class="card"
+        href="https://docs.google.com/spreadsheets/d/1Db3PDYTuySns4kXTREPOk-O7nLej60hRc91cdRpYWNA/edit?usp=sharing"
+        target="_blank"
+      >
+        <h2>📄</h2>
+        <p>Student Records</p>
+      </a>
+
+      <a
+        class="card"
+        href="https://drive.google.com/drive/my-drive"
+        target="_blank"
+      >
+        <h2>📑</h2>
+        <p>PDF Reports</p>
+      </a>
+
+      <a class="card" href="https://mail.google.com" target="_blank">
+        <h2>📧</h2>
+        <p>Email</p>
+      </a>
+
+      <div class="card">
+        <h2 id="totalStudents">0</h2>
+        <p>Total Students</p>
+      </div>
+      <div class="card" onclick="openInternForm()">
+        <h2>👨‍💻</h2>
+        <p>Create Intern</p>
+      </div>
+    </div>
+
+    <!-- dashboard end -->
+
+    <div id="notifications" class="section">
+      <h3>🔔 Notifications</h3>
+
+      <ul id="notifyList"></ul>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:10px">
+
+<select id="courseFilter">
+<option value="">All Courses</option>
+</select>
+
+<input type="date" id="dateFilter">
+
+</div>
+
+    <div class="section">
+      <h3>🔍 Student Search</h3>
+      <button
+        onclick="downloadCSV()"
+        style="
+          margin-bottom: 15px;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 8px;
+          background: #9d4edd;
+          color: white;
+          cursor: pointer;
+        "
+      >
+        ⬇ Download Student Report
+      </button>
+
+      <input
+        type="text"
+        id="search"
+        placeholder="Search by ID, Name, Email or Course"
+      />
+      <table>
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Course</th>
+          </tr>
+        </thead>
+
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="chartBox">
+      <h3>📊 Admission Graph</h3>
+
+      <div class="chart-container">
+        <canvas id="admissionChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chartBox">
+      <h3>📈 Monthly Admissions</h3>
+
+      <div class="chart-container">
+        <canvas id="monthlyChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chartBox">
+      <h3>📚 Course Popularity</h3>
+
+      <div class="chart-container">
+        <canvas id="courseChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chartBox">
+      <h3>📅 Daily Admissions</h3>
+
+      <div class="chart-container">
+        <canvas id="dailyChart"></canvas>
+      </div>
+    </div>
+
+      <div class="section">
+  <h3>🏆 Top Performing Course</h3>
+  <h2 id="topCourse"></h2>
+</div>
+
+<div class="section">
+  <h3>🤖 AI Admission Insights</h3>
+  <ul id="aiInsights" style="list-style:none;padding:0"></ul>
+</div>
+
+      
+    <div class="section">
+      <h3>🕒 Recent Admissions</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Course</th>
+          </tr>
+        </thead>
+
+        <tbody id="recentAdmissions"></tbody>
+      </table>
+    </div>
+    <div class="section">
+<h3>⚠ Student Risk Alerts</h3>
+<ul id="riskList" style="list-style:none;padding:0"></ul>
+</div>
+
+    <div class="section">
+      <h3>👨‍💼 Staff Admission Statistics</h3>
+
+      <div id="staffStats"></div>
+    </div>
+    <div class="section">
+      <h3>🏆 Staff Performance Ranking</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Staff Name</th>
+            <th>Admissions</th>
+            <th>Performance</th>
+          </tr>
+        </thead>
+
+        <tbody id="staffRanking"></tbody>
+      </table>
+    </div>
+    <div class="section">
+      <h3>👨‍💼 Staff Requests</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="staffTable"></tbody>
+      </table>
+    </div>
+
+    <div class="section">
+
+<h3>📜 Manage Rules</h3>
+
+<input id="ruleTitle" placeholder="Rule Title">
+
+<input id="ruleDesc" placeholder="Rule Description">
+
+<button onclick="addRule()">Add Rule</button>
+
+<p id="ruleResult"></p>
+
+</div>
+
+<div class="section">
+<h3>🧾 Admin Activity Log</h3>
+<ul id="adminLog" style="list-style:none;padding:0"></ul>
+</div> 
+
+    <div class="section" id="internSection" style="display: none">
+      <h3>👨‍💻 Create Intern</h3>
+
+      <input type="text" id="internName" placeholder="Intern Name" />
+
+      <input type="email" id="internEmail" placeholder="Intern Email" />
+
+      <input type="text" id="internPhone" placeholder="Phone" />
+
+      <button onclick="createIntern()">Create Intern</button>
+
+      <p id="internResult"></p>
+    </div>
+    <script>
+      const scriptURL =
+        "https://script.google.com/macros/s/AKfycbxwRJJ4I817MiWduFYqzaeXr1Lyots83fKjv8V6e9SOhfUEzqma_ygSZZhzBVhqFhXp/exec";
+
+      function parseCSV(text) {
+        const rows = [];
+        let row = [];
+        let col = "";
+        let insideQuote = false;
+
+        for (let i = 0; i < text.length; i++) {
+          let char = text[i];
+
+          if (char === '"') {
+            insideQuote = !insideQuote;
+          } else if (char === "," && !insideQuote) {
+            row.push(col);
+            col = "";
+          } else if (char === "\n" && !insideQuote) {
+            row.push(col);
+            rows.push(row);
+            row = [];
+            col = "";
+          } else {
+            col += char;
+          }
+        }
+
+        row.push(col);
+        rows.push(row);
+
+        return rows;
+      }
+
+      const toggle = document.getElementById("modeToggle");
+
+      toggle.onclick = () => {
+
+document.body.classList.toggle("dark");
+
+let mode = document.body.classList.contains("dark");
+
+localStorage.setItem("theme",mode);
+
+toggle.innerHTML = mode ? "☀️" : "🌙";
+
+};
+
+if(localStorage.getItem("theme")=="true"){
+
+document.body.classList.add("dark");
+
+toggle.innerHTML="☀️";
+
+}
+
+      const sheetURL =
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vRGvucc62JEFtApTIfmUMqMihE8KJqoM1Hx0NlnzPcq0dxfj-fBspjW1c9MbrVGZLrCdrT55NDz-d7k/pub?gid=0&single=true&output=csv";
+
+      function loadStudents() {
+        fetch(sheetURL)
+          .then((res) => res.text())
+          .then((data) => {
+            let rows = parseCSV(data).slice(1);
+            let table = document.getElementById("tableBody");
+
+            table.innerHTML = "";
+            let courseSet = new Set();
+
+            rows.forEach((row, index) => {
+              let cols = row;
+             if(cols[6]){
+courseSet.add(cols[6]);
+}
+              if (cols.length > 3) {
+                let tr = document.createElement("tr");
+
+                tr.innerHTML = `
+<td>${cols[0]}</td>
+<td>${cols[1]}</td>
+<td>${cols[2]}</td>
+<td>${cols[3]}</td>
+<td>${cols[6]}</td>
+`;
+                 tr.onclick = function(){
+openProfile(cols[1],cols[2],cols[3],cols[6]);
+};
+                table.appendChild(tr);
+              }
+            });
+            let filter = document.getElementById("courseFilter");
+
+filter.innerHTML = '<option value="">All Courses</option>';
+
+courseSet.forEach(c=>{
+let option=document.createElement("option");
+option.value=c;
+option.textContent=c;
+filter.appendChild(option);
+});
+
+let count = rows.length;
+let current = 0;
+
+let interval = setInterval(() => {
+
+current++;
+
+document.getElementById("totalStudents").innerText = current.toLocaleString();
+
+if(current >= count){
+clearInterval(interval);
+}
+
+},20);
+          });
+      }
+
+      loadStudents();
+
+      /* AUTO REFRESH EVERY 30s */
+
+      setInterval(loadStudents, 30000);
+      function openInternForm() {
+        document.getElementById("internSection").style.display = "block";
+      }
+
+      function createIntern() {
+        const name = document.getElementById("internName").value;
+        const email = document.getElementById("internEmail").value;
+        const phone = document.getElementById("internPhone").value;
+
+        let formData = new FormData();
+
+        formData.append("type", "createIntern");
+        formData.append("name", name);
+        formData.append("email", email);
+        formData.append("phone", phone);
+
+        fetch(scriptURL, {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.text())
+          .then((data) => {
+            document.getElementById("internResult").innerText = data;
+
+            logAdminActivity("New intern created");
+
+            document.getElementById("internName").value = "";
+            document.getElementById("internEmail").value = "";
+            document.getElementById("internPhone").value = "";
+          });
+      }
+
+      /* RECENT ADMISSIONS */
+
+      fetch(sheetURL)
+        .then((res) => res.text())
+        .then((data) => {
+          let rows = data.split("\n").slice(1).reverse().slice(0, 5);
+
+          let container = document.getElementById("recentAdmissions");
+           container.innerHTML="";
+
+
+          rows.forEach((row) => {
+            let cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+            let tr = document.createElement("tr");
+
+            tr.innerHTML = `
+<td>${cols[0]}</td>
+<td>${cols[1]}</td>
+<td>${cols[6]}</td>
+`;
+
+            container.appendChild(tr);
+          });
+        });
+
+      /* SEARCH */
+
+      document.getElementById("search").addEventListener("keyup", function () {
+        let filter = this.value.toLowerCase();
+        let tr = document.querySelectorAll("#tableBody tr");
+
+        tr.forEach((row) => {
+          let text = row.innerText.toLowerCase();
+          row.style.display = text.includes(filter) ? "" : "none";
+        });
+      });
+
+      /* GRAPH */
+
+      let courseCount = {};
+
+      fetch(sheetURL)
+        .then((res) => res.text())
+        .then((data) => {
+          let rows = data.split("\n");
+          let headers = rows[0].split(",");
+          let courseIndex = headers.findIndex((h) =>
+            h.toLowerCase().includes("course"),
+          );
+
+          rows.slice(1).forEach((row) => {
+            let cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            let course = cols[courseIndex];
+
+            if (course) {
+              courseCount[course] = (courseCount[course] || 0) + 1;
+            }
+          });
+
+          new Chart(document.getElementById("admissionChart"), {
+            type: "bar",
+            data: {
+              labels: Object.keys(courseCount),
+              datasets: [
+                {
+                  data: Object.values(courseCount),
+                  backgroundColor: [
+                    "#9d4edd",
+                    "#c77dff",
+                    "#7b2cbf",
+                    "#5a189a",
+                    "#ff9e00",
+                    "#00b4d8",
+                    "#2ec4b6",
+                  ],
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+            },
+          });
+        });
+
+      /* STAFF STATS */
+      const staffSheetURL =
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vRGvucc62JEFtApTIfmUMqMihE8KJqoM1Hx0NlnzPcq0dxfj-fBspjW1c9MbrVGZLrCdrT55NDz-d7k/pub?gid=1800832107&single=true&output=csv";
+
+      /* LOAD STAFF REQUESTS */
+
+      function loadStaffRequests() {
+        fetch(staffSheetURL + "&t=" + new Date().getTime())
+          .then((res) => res.text())
+          .then((data) => {
+            let rows = data.trim().split(/\r?\n/).slice(1);
+
+            let table = "";
+
+            rows.forEach((row, index) => {
+              let cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+              let name = cols[0];
+              let email = cols[1].trim();
+              let status = (cols[3] || "").trim();
+
+              if (status && status.trim().toLowerCase() === "pending") {
+                table += `
+<tr>
+<td>${name}</td>
+<td>${email}</td>
+<td>${status}</td>
+<td>
+<button onclick="approve(${index + 2},this)">Approve</button>
+<button onclick="reject(${index + 2},this)">Reject</button>
+</td>
+</tr>
+`;
+              }
+            });
+
+            document.getElementById("staffTable").innerHTML = table;
+          });
+      }
+
+      /* APPROVE STAFF */
+
+      function approve(row, btn) {
+        btn.disabled = true;
+
+        let formData = new FormData();
+
+        formData.append("type", "updateStaff");
+        formData.append("row", row);
+        formData.append("status", "Approved");
+
+        fetch(scriptURL, {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.text())
+          .then((data) => {
+            console.log(data); // important debugging
+
+            if (data.includes("Updated")) {
+              btn.innerText = "Approved";
+
+              logAdminActivity("Staff approved");
+
+            } else {
+              alert(data);
+              btn.disabled = false;
+            }
+
+            loadStaffRequests();
+          });
+      }
+
+      /* REJECT STAFF */
+
+      function reject(row, btn) {
+        btn.disabled = true;
+
+        let formData = new FormData();
+
+        formData.append("type", "updateStaff");
+        formData.append("row", row);
+        formData.append("status", "Blocked");
+
+        fetch(scriptURL, {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.text())
+          .then((data) => {
+            console.log(data);
+
+            if (data.includes("Updated")) {
+              btn.innerText = "Blocked";
+              logAdminActivity("Staff rejected")
+            } else {
+              alert(data);
+              btn.disabled = false;
+            }
+
+            loadStaffRequests();
+          });
+      }
+
+      /* INITIAL LOAD */
+
+      loadStaffRequests();
+
+      /* AUTO REFRESH */
+
+      setInterval(loadStaffRequests, 10000);
+      /* STAFF ADMISSION STATISTICS */
+
+      const staffLogURL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vRGvucc62JEFtApTIfmUMqMihE8KJqoM1Hx0NlnzPcq0dxfj-fBspjW1c9MbrVGZLrCdrT55NDz-d7k/pub?gid=1210289180&single=true&output=csv";
+      function loadStaffStats() {
+        fetch(staffLogURL)
+          .then((res) => res.text())
+          .then((data) => {
+            let rows = data.trim().split("\n").slice(1);
+
+            let staffCount = {};
+
+            rows.forEach((row, index) => {
+              let cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+              let staff = cols[0];
+
+              if (staff) {
+                staffCount[staff] = (staffCount[staff] || 0) + 1;
+              }
+            });
+
+            let html = "<table>";
+
+            html += "<tr><th>Staff</th><th>Admissions</th></tr>";
+
+            for (let staff in staffCount) {
+              html += `
+<tr>
+<td>${staff}</td>
+<td>${staffCount[staff]}</td>
+</tr>
+`;
+            }
+
+            html += "</table>";
+
+            document.getElementById("staffStats").innerHTML = html;
+          });
+      }
+
+      /* LOAD STAFF STATS */
+
+      loadStaffStats();
+      function loadStaffRanking() {
+        fetch(staffLogURL)
+          .then((res) => res.text())
+          .then((data) => {
+            let rows = data.trim().split("\n").slice(1);
+
+            let staffCount = {};
+
+            rows.forEach((row) => {
+              let cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+              let staff = cols[0];
+
+              if (staff) {
+                staffCount[staff] = (staffCount[staff] || 0) + 1;
+              }
+            });
+
+            let sorted = Object.entries(staffCount).sort((a, b) => b[1] - a[1]);
+
+            let table = "";
+          sorted.forEach((item, index) => {
+
+let performance="";
+
+if(item[1] >= 10){
+performance="⭐⭐⭐⭐⭐";
+}
+else if(item[1] >= 5){
+performance="⭐⭐⭐⭐";
+}
+else if(item[1] >= 2){
+performance="⭐⭐⭐";
+}
+else{
+performance="⭐";
+}
+
+table += `
+<tr>
+<td>${index+1}</td>
+<td>${item[0]}</td>
+<td>${item[1]}</td>
+<td>${performance}</td>
+</tr>
+`;
+
+});
+            document.getElementById("staffRanking").innerHTML = table;
+          });
+      }
+
+      loadStaffRanking();
+
+      function loadMonthlyAdmissions() {
+        fetch(sheetURL)
+          .then((res) => res.text())
+          .then((data) => {
+            let rows = data.split("\n").slice(1);
+
+            let monthCount = {};
+
+            rows.forEach((row) => {
+              let cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+              let date = cols[10]; // admission date column
+
+              if (date) {
+                let d = new Date(date);
+                let month = d.toLocaleString("default", { month: "short" });
+
+                monthCount[month] = (monthCount[month] || 0) + 1;
+              }
+            });
+
+            new Chart(document.getElementById("monthlyChart"), {
+              type: "line",
+              data: {
+                labels: Object.keys(monthCount),
+                datasets: [
+                  {
+                    label: "Admissions",
+                    data: Object.values(monthCount),
+                    borderColor: "#c77dff",
+                    backgroundColor: "rgba(199,125,255,0.2)",
+                    fill: true,
+                    tension: 0.4,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    ticks: {
+                      precision: 0,
+                    },
+                  },
+                },
+              },
+            });
+          });
+      }
+
+      loadMonthlyAdmissions();
+
+      function loadCoursePopularity() {
+        fetch(sheetURL)
+          .then((res) => res.text())
+          .then((data) => {
+            let rows = data.split("\n").slice(1);
+
+            let courseCount = {};
+
+            rows.forEach((row) => {
+              let cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+              let course = cols[6];
+
+              if (course) {
+                courseCount[course] = (courseCount[course] || 0) + 1;
+              }
+            });
+
+            new Chart(document.getElementById("courseChart"), {
+              type: "pie",
+              data: {
+                labels: Object.keys(courseCount),
+                datasets: [
+                  {
+                    data: Object.values(courseCount),
+                    backgroundColor: [
+                      "#9d4edd",
+                      "#c77dff",
+                      "#7b2cbf",
+                      "#ff9e00",
+                      "#00b4d8",
+                    ],
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+              },
+            });
+          });
+      }
+
+      loadCoursePopularity();
+      function loadDailyAdmissions() {
+        fetch(sheetURL)
+          .then((res) => res.text())
+          .then((data) => {
+            let rows = data.split("\n").slice(1);
+
+            let dayCount = {};
+
+            rows.forEach((row) => {
+              let cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+              let date = cols[10];
+
+              if (date) {
+                let d = new Date(date);
+
+                let day = d.toLocaleDateString();
+
+                dayCount[day] = (dayCount[day] || 0) + 1;
+              }
+            });
+
+            new Chart(document.getElementById("dailyChart"), {
+              type: "line",
+              data: {
+                labels: Object.keys(dayCount),
+                datasets: [
+                  {
+                    label: "Admissions",
+                    data: Object.values(dayCount),
+                    borderColor: "#ff9e00",
+                    backgroundColor: "rgba(255,158,0,0.2)",
+                    fill: true,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+              },
+            });
+          });
+      }
+
+      loadDailyAdmissions();
+      function loadTopCourse() {
+        loadAIInsights();
+        fetch(sheetURL)
+          .then((res) => res.text())
+          .then((data) => {
+            let rows = data.split("\n").slice(1);
+
+            let courseCount = {};
+
+            rows.forEach((row) => {
+              let cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+              let course = cols[6];
+
+              if (course) {
+                courseCount[course] = (courseCount[course] || 0) + 1;
+              }
+            });
+
+            let top = Object.entries(courseCount).sort(
+              (a, b) => b[1] - a[1],
+            )[0];
+
+            document.getElementById("topCourse").innerText =
+              top[0] + " (" + top[1] + " Admissions)";
+          });
+      }
+
+      function loadRiskAlerts(){
+
+let list=document.getElementById("riskList");
+
+list.innerHTML="";
+
+fetch(sheetURL)
+.then(res=>res.text())
+.then(data=>{
+
+let rows=data.split("\n").slice(1);
+
+rows.forEach(row=>{
+
+let cols=row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+let name=cols[1];
+
+let date=cols[10];
+
+if(date){
+
+let diff=(new Date()-new Date(date))/(1000*60*60*24);
+
+if(diff>30){
+
+let li=document.createElement("li");
+
+li.innerText="⚠ "+name+" inactive for "+Math.floor(diff)+" days";
+
+list.appendChild(li);
+
+}
+
+}
+
+});
+
+});
+
+}
+
+     loadTopCourse();
+loadRiskAlerts();
+
+setInterval(loadAIInsights,30000);
+setInterval(loadRiskAlerts,30000);
+      
+function loadNotifications(){
+
+let list = document.getElementById("notifyList");
+
+list.innerHTML = "";
+
+/* TODAY ADMISSIONS */
+
+let today = new Date().toLocaleDateString();
+
+fetch(sheetURL)
+.then(res=>res.text())
+.then(data=>{
+
+let rows = data.split("\n").slice(1);
+
+let todayAdmissions = rows.filter(r=>r.includes(today)).length;
+
+let li = document.createElement("li");
+
+li.innerText = "⚡ Today Admissions: " + todayAdmissions;
+
+list.appendChild(li);
+
+});
+
+/* STAFF REQUESTS */
+
+fetch(staffSheetURL + "&t=" + new Date().getTime())
+.then(res=>res.text())
+.then(data=>{
+
+let rows = data.split("\n").slice(1);
+
+rows.forEach(row=>{
+
+let cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+let status = cols[3];
+
+if(status && status.trim()=="Pending"){
+
+let li = document.createElement("li");
+
+li.innerText = "🔔 New Staff Signup Request";
+
+list.appendChild(li);
+
+}
+
+});
+
+});
+
+/* RECENT ADMISSIONS */
+
+fetch(sheetURL)
+.then(res=>res.text())
+.then(data=>{
+
+let rows = data.split("\n").slice(1).reverse().slice(0,3);
+
+rows.forEach(row=>{
+
+let cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+let li = document.createElement("li");
+
+li.innerText = "🎓 New Admission: " + cols[1];
+
+if(!window.lastAdmission || window.lastAdmission !== cols[1]){
+
+showToast("🎉 New Admission: " + cols[1]);
+
+window.lastAdmission = cols[1];
+
+}
+
+list.appendChild(li);
+
+});
+
+});
+
+}
+      loadNotifications();
+      setInterval(loadNotifications, 10000);
+      function downloadCSV() {
+        fetch(sheetURL)
+          .then((res) => res.text())
+          .then((data) => {
+            let blob = new Blob([data], { type: "text/csv" });
+
+            let url = window.URL.createObjectURL(blob);
+
+            let a = document.createElement("a");
+
+            a.href = url;
+
+            a.download = "Student_Report.csv";
+
+            document.body.appendChild(a);
+
+            a.click();
+
+            document.body.removeChild(a);
+          });
+      }
+      function loadAIInsights(){
+
+let list=document.getElementById("aiInsights");
+
+list.innerHTML="";
+
+fetch(sheetURL)
+.then(res=>res.text())
+.then(data=>{
+
+let rows=data.split("\n").slice(1);
+
+let courseCount={};
+
+let today=new Date().toLocaleDateString();
+
+let todayCount=0;
+
+rows.forEach(row=>{
+
+let cols=row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+let course=cols[6];
+
+let date=cols[10];
+
+if(course){
+courseCount[course]=(courseCount[course]||0)+1;
+}
+
+if(date && date.includes(today)){
+todayCount++;
+}
+
+});
+
+let topCourse=Object.entries(courseCount).sort((a,b)=>b[1]-a[1])[0];
+
+let li1=document.createElement("li");
+li1.innerText="📚 Most popular course: "+topCourse[0];
+list.appendChild(li1);
+
+let li2=document.createElement("li");
+li2.innerText="⚡ Admissions today: "+todayCount;
+list.appendChild(li2);
+
+if(todayCount>5){
+
+let li3=document.createElement("li");
+li3.innerText="🚀 High demand today. Consider opening new batch.";
+list.appendChild(li3);
+
+}else{
+
+let li3=document.createElement("li");
+li3.innerText="📉 Admissions low today. Marketing recommended.";
+list.appendChild(li3);
+
+}
+
+});
+
+}
+      function logout() {
+        localStorage.removeItem("adminLogin");
+
+        window.location.href = "admin-login.html";
+      }
+      function confirmLogout() {
+  const popup = document.getElementById("logoutPopup");
+  popup.style.display = "flex";
+}
+
+function closeLogoutPopup() {
+  const popup = document.getElementById("logoutPopup");
+  popup.style.display = "none";
+}
+function addRule(){
+
+let title = document.getElementById("ruleTitle").value.trim();
+let desc = document.getElementById("ruleDesc").value.trim();
+
+if(title==="" || desc===""){
+alert("⚠ Please enter both Rule Title and Description");
+return;
+}
+
+let formData = new FormData();
+
+formData.append("type","addRule");
+formData.append("title",title);
+formData.append("desc",desc);
+
+fetch(scriptURL,{
+method:"POST",
+body:formData
+})
+.then(res=>res.text())
+.then(data=>{
+
+document.getElementById("ruleResult").innerText=data;
+
+logAdminActivity("New rule added");
+
+document.getElementById("ruleTitle").value="";
+document.getElementById("ruleDesc").value="";
+
+});
+
+}
+function showToast(message){
+
+let toast=document.getElementById("toast");
+
+toast.innerText=message;
+
+toast.style.display="block";
+
+setTimeout(()=>{
+toast.style.display="none";
+},4000);
+
+}
+function logAdminActivity(action){
+
+let list=document.getElementById("adminLog");
+
+let li=document.createElement("li");
+
+li.innerText="✔ "+action+" ("+new Date().toLocaleTimeString()+")";
+
+list.prepend(li);
+
+}
+function openProfile(name,email,phone,course){
+
+alert(
+"Student Profile\n\n"+
+"Name: "+name+"\n"+
+"Email: "+email+"\n"+
+"Phone: "+phone+"\n"+
+"Course: "+course
+);
+
+}
+function applyFilters(){
+
+let course=document.getElementById("courseFilter").value.toLowerCase();
+let search=document.getElementById("search").value.toLowerCase();
+let rows=document.querySelectorAll("#tableBody tr");
+
+rows.forEach(row=>{
+
+let text=row.innerText.toLowerCase();
+
+if(
+(course=="" || text.includes(course)) &&
+(search=="" || text.includes(search))
+){row.style.display="";
+}else{
+row.style.display="none";
+}
+
+});
+
+}
+function toggleFab(){
+
+let menu=document.getElementById("fabMenu");
+
+menu.style.display=menu.style.display=="block"?"none":"block";
+
+}
+document.addEventListener("keydown",function(e){
+
+if(e.ctrlKey && e.key==="f"){
+e.preventDefault();
+document.getElementById("search").focus();
+}
+
+if(e.ctrlKey && e.key==="d"){
+downloadCSV();
+}
+
+if(e.ctrlKey && e.key==="i"){
+openInternForm();
+}
+
+});
+function updateClock(){
+
+let now=new Date();
+
+document.getElementById("liveClock").innerText=
+"🕒 "+now.toLocaleTimeString();
+
+}
+
+setInterval(updateClock,1000);
+
+updateClock();
+document.getElementById("courseFilter").addEventListener("change",applyFilters);
+    
+    document.addEventListener("keydown",function(e){
+
+if(e.ctrlKey && e.key==="k"){
+e.preventDefault();
+
+let palette=document.getElementById("commandPalette");
+
+palette.style.display="flex";
+
+document.getElementById("commandInput").focus();
+}
+
+if(e.key==="Escape"){
+
+document.getElementById("commandPalette").style.display="none";
+
+}
+
+});
+    
+document.addEventListener("click",function(e){
+
+let palette=document.getElementById("commandPalette");
+let box=palette.querySelector("div");
+
+if(
+palette.style.display==="flex" &&
+!box.contains(e.target) &&
+e.target.id!=="commandInput"
+){
+palette.style.display="none";
+}
+
+});
+
+function closePalette(){
+document.getElementById("commandPalette").style.display="none";
+}
+
+function setGreeting(){
+
+let hour=new Date().getHours();
+
+let text="";
+
+if(hour<12){
+text="🌅 Good Morning Admin";
+}
+else if(hour<18){
+text="☀ Good Afternoon Admin";
+}
+else{
+text="🌙 Good Evening Admin";
+}
+
+document.getElementById("greeting").innerText=text;
+
+}
+
+setGreeting();
+
+
+function openProfile(name,email,phone,course){
+
+document.getElementById("profilePopup").style.display="flex";
+
+document.getElementById("profileName").innerText="Name: "+name;
+document.getElementById("profileEmail").innerText="Email: "+email;
+document.getElementById("profilePhone").innerText="Phone: "+phone;
+document.getElementById("profileCourse").innerText="Course: "+course;
+
+}
+
+function closeProfile(){
+
+document.getElementById("profilePopup").style.display="none";
+
+}
+
+
+
+    </script>
+
+
+    <div id="logoutPopup" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+justify-content:center;
+align-items:center;
+z-index:9999;
+">
+
+<div style="
+background:#1a0030;
+padding:30px;
+border-radius:15px;
+text-align:center;
+color:white;
+box-shadow:0 0 25px rgba(170,0,255,0.4);
+">
+
+<h3>⚠ Logout Confirmation</h3>
+<p>Are you sure you want to logout?</p>
+
+<button onclick="logout()" style="
+margin:10px;
+padding:10px 20px;
+border:none;
+border-radius:20px;
+background:#ff4b5c;
+color:white;
+cursor:pointer;
+">Yes</button>
+
+<button onclick="closeLogoutPopup()" style="
+margin:10px;
+padding:10px 20px;
+border:none;
+border-radius:20px;
+background:#9d4edd;
+color:white;
+cursor:pointer;
+">Cancel</button>
+
+</div>
+</div>
+
+<div id="commandPalette" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+justify-content:center;
+align-items:flex-start;
+padding-top:120px;
+z-index:9999;
+">
+
+<div style="
+background:#1a0030;
+width:400px;
+border-radius:12px;
+padding:20px;
+box-shadow:0 0 25px rgba(170,0,255,0.4);
+">
+
+<input id="commandInput" placeholder="Search commands..." style="
+width:100%;
+padding:12px;
+border-radius:8px;
+border:none;
+outline:none;
+margin-bottom:10px;
+">
+
+<ul id="commandList" style="list-style:none;padding:0;margin:0">
+
+<li onclick="openInternForm();closePalette()">👨‍💻 Create Intern</li>
+<li onclick="downloadCSV()">⬇ Download Student Report</li>
+<li onclick="window.open('https://docs.google.com/spreadsheets','_blank')">📄 Open Student Records</li>
+<li onclick="window.scrollTo(0,0)">📊 Go to Analytics</li>
+
+</ul>
+
+</div>
+</div>
+<div id="profilePopup" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+justify-content:center;
+align-items:center;
+z-index:9999;
+">
+
+<div style="
+background:#1a0030;
+padding:30px;
+border-radius:15px;
+color:white;
+width:350px;
+box-shadow:0 0 30px rgba(170,0,255,0.4);
+">
+
+<h3>👨‍🎓 Student Profile</h3>
+
+<p id="profileName"></p>
+<p id="profileEmail"></p>
+<p id="profilePhone"></p>
+<p id="profileCourse"></p>
+
+<button onclick="closeProfile()" style="
+margin-top:15px;
+padding:8px 18px;
+border:none;
+border-radius:10px;
+background:#9d4edd;
+color:white;
+cursor:pointer;
+">Close</button>
+
+</div>
+</div>
+<div id="toast"></div>
+<div id="fab" onclick="toggleFab()" style="
+position:fixed;
+bottom:30px;
+right:30px;
+width:60px;
+height:60px;
+border-radius:50%;
+background:#9d4edd;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+cursor:pointer;
+box-shadow:0 0 20px rgba(0,0,0,0.5);
+z-index:999;
+">+</div>
+
+<div id="fabMenu" style="
+display:none;
+position:fixed;
+bottom:100px;
+right:30px;
+background:#1a0030;
+padding:15px;
+border-radius:10px;
+">
+
+<button onclick="openInternForm()">Create Intern</button><br><br>
+<button onclick="downloadCSV()">Download Report</button>
+
+</div>
+
+  </body>
+</html>

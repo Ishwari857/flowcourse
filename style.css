@@ -1,0 +1,85 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #2b1055, #7597de);
+}
+
+.container {
+  width: 420px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  color: white;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 15px;
+  border-radius: 40px;
+  border: none;
+  background: linear-gradient(45deg, #ff416c, #ff4b2b);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: relative;
+  margin: 10px 0;
+}
+
+.dropdown-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  background: #2b1055;
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.dropdown-item {
+  padding: 12px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #6a5acd;
+}

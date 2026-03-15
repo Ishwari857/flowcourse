@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Staff Authentication</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: radial-gradient(circle at top, #2b0045, #0b0017 70%);
+      }
+
+      .container {
+        width: 350px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(25px);
+        padding: 35px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 40px rgba(170, 0, 255, 0.25);
+        color: white;
+        text-align: center;
+      }
+
+      h2 {
+        margin-bottom: 20px;
+      }
+
+      input {
+        width: 100%;
+        padding: 13px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        outline: none;
+      }
+
+      button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 10px;
+        border: none;
+        border-radius: 30px;
+        background: linear-gradient(45deg, #9d4edd, #c77dff);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .switch {
+        margin-top: 10px;
+        cursor: pointer;
+        color: #ccc;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2 id="title">Staff Login</h2>
+
+      <input id="name" placeholder="Full Name" style="display: none" />
+<input id="email" type="email" placeholder="Email" />
+<input id="password" type="password" placeholder="Password" required />
+      <button onclick="submitForm()">Login</button>
+      <div id="loader" style="display: none; margin-top: 10px">
+        ⏳ Processing please wait...
+      </div>
+
+      <p class="switch" onclick="toggle()">Create Account</p>
+
+      <p id="msg"></p>
+    </div>
+
+    <script>
+      const loader = document.getElementById("loader");
+      const btn = document.querySelector("button");
+
+      let mode = "login";
+
+      /* GOOGLE APPS SCRIPT URL */
+
+      const scriptURL =
+        "https://script.google.com/macros/s/AKfycbxwRJJ4I817MiWduFYqzaeXr1Lyots83fKjv8V6e9SOhfUEzqma_ygSZZhzBVhqFhXp/exec";
+
+      /* TOGGLE LOGIN / SIGNUP */
+
+      function toggle() {
+        if (mode === "login") {
+          mode = "signup";
+
+          document.getElementById("title").innerText = "Staff Sign Up";
+          document.getElementById("name").style.display = "block";
+          document.querySelector("button").innerText = "Sign Up";
+          document.querySelector(".switch").innerText =
+            "Already have account? Login";
+        } else {
+          mode = "login";
+
+          document.getElementById("title").innerText = "Staff Login";
+          document.getElementById("name").style.display = "none";
+          document.querySelector("button").innerText = "Login";
+          document.querySelector(".switch").innerText = "Create Account";
+        }
+      }
+
+      /* SUBMIT FORM */
+
+      function submitForm() {
+        let name = document.getElementById("name").value;
+        let email = document.getElementById("email").value;
+        let pass = document.getElementById("password").value;
+
+        /* SIGNUP */
+
+        if (mode === "signup") {
+          const formData = new FormData();
+
+          formData.append("type", "signup");
+          formData.append("name", name);
+          formData.append("email", email);
+          formData.append("password", pass);
+
+          loader.style.display = "block";
+          btn.disabled = true;
+          fetch(scriptURL, {
+            method: "POST",
+            body: formData,
+          })
+            .then((res) => res.text())
+            .then((data) => {
+              loader.style.display = "none";
+              btn.disabled = false;
+
+              alert("Signup request sent to admin");
+            })
+            .catch((err) => {
+              loader.style.display = "none";
+
+              alert("Error sending request");
+            });
+        } else {
+
+        /* LOGIN */
+        
+       /* LOGIN */
+
+const formData = new FormData();
+
+formData.append("type", "staffLogin");
+formData.append("email", email);
+formData.append("password", pass);
+
+loader.style.display = "block";
+btn.disabled = true;
+
+fetch(scriptURL, {
+  method: "POST",
+  body: formData,
+})
+.then((res) => res.text())
+.then((data) => {
+
+  loader.style.display = "none";
+  btn.disabled = false;
+if (data === "Login Success") {
+
+localStorage.setItem("staffLogin","true");
+
+let staffName = email.split("@")[0];
+
+localStorage.setItem("staffName", staffName);
+
+window.location.href = "admission.html";
+
+}
+
+  else {
+
+    alert(data);
+
+  }
+
+})
+.catch((err) => {
+
+  loader.style.display = "none";
+  btn.disabled = false;
+
+  alert("Server error. Try again.");
+
+});
+
+        }
+      }
+    </script>
+  </body>
+</html>
